@@ -188,6 +188,20 @@ function goHome() {
   renderIntro();
 }
 
+function continueToIMessage() {
+  const IMESSAGE_URL = 'https://evokate.github.io/imessage/iMessage.html';
+  const params = new URLSearchParams();
+  params.append('name',           data.name           || '');
+  params.append('email',          data.email          || '');
+  params.append('title',          data.currentTitle   || '');
+  params.append('company',        data.currentCompany || '');
+  params.append('targetRole',     data.targetTitle    || '');
+  params.append('knownFor',       (data.knownFor      || '').substring(0, 200));
+  params.append('achievement',    (data.achievement   || '').substring(0, 200));
+  params.append('differentiator', (data.differentiator|| '').substring(0, 200));
+  window.open(IMESSAGE_URL + '?' + params.toString(), '_blank');
+}
+
 // SCREEN 0: Intro ─────────────────────────────────────────────────────────
 function renderIntro() {
   setProgress(0);
@@ -287,7 +301,7 @@ function renderTargetRole() {
 
       <div class="section-label">What type of role are you pursuing?</div>
       <div class="pill-group">
-        ${['Executive (C-suite / VP)','Non-Executive Director','Board Chair','Both Executive and NED','Open to all'].map(v=>
+        ${['Executive (C-suite / EVP)','Non-Executive Director','Board Chair','Both Executive and NED','Open to all'].map(v=>
           `<div class="pill${data.roleType===v?' active':''}" data-group="roletype" data-value="${v}" onclick="pillToggle(this,'roletype',false)">${v}</div>`
         ).join('')}
       </div>
@@ -625,7 +639,7 @@ function buildActionPlan(totalPct, sectionScores) {
   }
 
   if (sectionScores.find(s=>s.name==='Headhunter Relationships' && s.pct<70)) {
-    actions.push({ priority:'MEDIUM', label:'Headhunter Relationships (optional)', text:`Identify five headhunters who specialise in ${data.targetSectors||'your sector'} at your seniority level. Research their recent placements, find a genuine hook for each, and send a personalised InMail this week. ${data.hhKnowledge && data.hhKnowledge !== 'Not yet' ? 'You have indicated some knowledge of active headhunters at your target companies. Use that as your starting point.' : 'Start by mapping which search firms have placed executives at: ' + (data.targetCompanies||'your target companies') + '.'}` });
+    actions.push({ priority:'MEDIUM', label:'Headhunter Relationships', text:`Identify five headhunters who specialise in ${data.targetSectors||'your sector'} at your seniority level. Research their recent placements, find a genuine hook for each, and send a personalised InMail this week. ${data.hhKnowledge && data.hhKnowledge !== 'Not yet' ? 'You have indicated some knowledge of active headhunters at your target companies. Use that as your starting point.' : 'Start by mapping which search firms have placed executives at: ' + (data.targetCompanies||'your target companies') + '.'}` });
   }
 
   if (sectionScores.find(s=>s.name==='LinkedIn Presence' && s.pct<70)) {
@@ -748,6 +762,11 @@ function renderResults() {
       <div class="btn-group" style="margin-top:24px">
         <button class="btn-secondary" onclick="goHome()">&#8635; Start Again</button>
         <button class="btn-primary" onclick="downloadPDF()">&#8595; Download Your Plan (PDF)</button>
+      </div>
+      <div style="margin-top:16px;padding:16px;background:#e8f7ed;border:1px solid #a8d9b5;border-radius:10px;text-align:center">
+        <div style="font-size:13px;font-weight:700;color:#2e9e4f;margin-bottom:6px">Ready to build your outreach messages?</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Continue to iMessage to generate personalised outreach messages for each of your target contacts.</div>
+        <button class="btn-primary" style="background:#2e9e4f;max-width:320px;margin:0 auto" onclick="continueToIMessage()">Continue to iMessage &rarr;</button>
       </div>
     </div>`;
 }
