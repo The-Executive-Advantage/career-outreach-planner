@@ -150,7 +150,7 @@ let results = null;    // computed after step 7 (contact)
 
 // Screens: 0=intro, 1=AboutYou, 2=TargetRole, 3=ValueProp,
 //          4=NetworkReadiness, 5=OutreachStrategy, 6=Contact, 7=Results
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 5;
 
 // Utility ──────────────────────────────────────────────────────────────────
 const app  = () => document.getElementById('app');
@@ -210,9 +210,7 @@ function renderIntro() {
       <div class="eyebrow">The Executive Advantage</div>
       <h1>Career Outreach Planner</h1>
       <p class="intro-text">
-        This tool guides you through a structured, step-by-step outreach plan for your next executive role.
-        It takes around <strong>10 minutes</strong> to complete and produces a personalised action plan
-        you can download and act on immediately.
+        This tool guides you through a structured, step-by-step outreach plan for your next executive role. It produces a personalised action plan you can download and act on immediately.
       </p>
       <div class="info-box">
         <strong>What you will get:</strong><br>
@@ -221,6 +219,9 @@ function renderIntro() {
       <p class="intro-text" style="font-size:14px">
         Answer each question as honestly as you can. There are no right or wrong answers, only a clearer picture of where to focus your energy.
       </p>
+      <div class="instruction" style="font-size:12px;margin-bottom:12px">
+        <strong>Device tip:</strong> Please complete both iOutreach and iMessage on the same device and browser. Switching devices will start a fresh session.
+      </div>
       <button class="btn-primary" onclick="step=1;renderAboutYou()">Start &rarr;</button>
     </div>`;
 }
@@ -230,8 +231,8 @@ function renderAboutYou() {
   setProgress(1);
   app().innerHTML = `
     <div class="card">
-      <div class="eyebrow">Step 1 of 7</div>
-      <h2>About You</h2>
+      <div class="eyebrow">Step 1 of 5</div>
+      <h2>About You and Your Target</h2>
       <div class="instruction">Tell us a little about where you are right now. This helps us personalise your plan.</div>
 
       <div class="section-label">Full name</div>
@@ -288,10 +289,10 @@ function saveAboutYou() {
 
 // SCREEN 2: Ideal Company Profile (ICP) ─────────────────────────────────────
 function renderTargetRole() {
-  setProgress(2);
+  setProgress(1);
   app().innerHTML = `
     <div class="card">
-      <div class="eyebrow">Step 2 of 7</div>
+      <div class="eyebrow">Step 1 of 5 (continued)</div>
       <h2>Ideal Company Profile</h2>
       <div class="instruction">Defining your ideal company is the foundation of a focused search. The more specific you are here, the more targeted and effective your outreach will be.</div>
 
@@ -388,10 +389,10 @@ function saveTargetRole() {
 
 // SCREEN 3: Value Proposition ─────────────────────────────────────────────
 function renderValueProp() {
-  setProgress(3);
+  setProgress(2);
   app().innerHTML = `
     <div class="card">
-      <div class="eyebrow">Step 3 of 7</div>
+      <div class="eyebrow">Step 2 of 5</div>
       <h2>Your Value Proposition</h2>
       <div class="instruction">This is the foundation of every message you send. The clearer you are about what you bring, the more compelling your outreach will be.</div>
 
@@ -454,10 +455,10 @@ const networkSections = [
 ];
 
 function renderNetworkReadiness() {
-  setProgress(4);
+  setProgress(2);
   let html = `
     <div class="card">
-      <div class="eyebrow">Step 4 of 7</div>
+      <div class="eyebrow">Step 2 of 5 (continued)</div>
       <h2>Network Readiness</h2>
       <div class="instruction">Rate each statement from 0 (not at all) to 10 (completely true). Be honest. This is for your eyes and your advisor's only.</div>`;
 
@@ -517,10 +518,10 @@ const outreachSections = [
 ];
 
 function renderOutreachStrategy() {
-  setProgress(5);
+  setProgress(3);
   let html = `
     <div class="card">
-      <div class="eyebrow">Step 5 of 7</div>
+      <div class="eyebrow">Step 3 of 5</div>
       <h2>Outreach Strategy</h2>
       <div class="instruction">Rate each statement from 0 (not at all) to 10 (completely true). This tells us where to focus your energy first.</div>`;
 
@@ -551,10 +552,10 @@ function renderOutreachStrategy() {
 
 // SCREEN 6: Contact ───────────────────────────────────────────────────────
 function renderContact() {
-  setProgress(6);
+  setProgress(4);
   app().innerHTML = `
     <div class="card">
-      <div class="eyebrow">Step 6 of 7</div>
+      <div class="eyebrow">Step 4 of 5</div>
       <h2>Almost there</h2>
       <div class="instruction">We have your details from Step 1. Please confirm below before we generate your personalised plan.</div>
 
@@ -704,7 +705,7 @@ async function submitResults() {
 
 // SCREEN 7: Results ───────────────────────────────────────────────────────
 function renderResults() {
-  setProgress(7);
+  setProgress(5);
   const r = results;
 
   let secRows = r.sectionScores.map(s => {
