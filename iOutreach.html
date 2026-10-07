@@ -489,15 +489,6 @@ function renderNetworkReadiness() {
 // SCREEN 5: Outreach Strategy (rated sections) ───────────────────────────
 const outreachSections = [
   {
-    title: 'LinkedIn Presence',
-    key:   'linkedin',
-    items: [
-      { key:'li1', label:'My LinkedIn profile clearly communicates my value proposition and target role.' },
-      { key:'li2', label:'My headline, summary, and experience are up to date and written for my target audience.' },
-      { key:'li3', label:'I post or engage on LinkedIn at least once a week.' },
-    ]
-  },
-  {
     title: 'Message Craft',
     key:   'messages',
     items: [
@@ -513,6 +504,15 @@ const outreachSections = [
       { key:'oa1', label:'I am sending at least five targeted outreach messages per week.', weight: 2 },
       { key:'oa2', label:'I track every message I send, every response I receive, and every follow-up due.' },
       { key:'oa3', label:'I am actively attending relevant industry events and conversations to build my visibility.' },
+    ]
+  },
+  {
+    title: 'LinkedIn Presence',
+    key:   'linkedin',
+    items: [
+      { key:'li1', label:'My LinkedIn profile clearly communicates my value proposition and target role.' },
+      { key:'li2', label:'My headline, summary, and experience are up to date and written for my target audience.' },
+      { key:'li3', label:'I post or engage on LinkedIn at least once a week.' },
     ]
   }
 ];
@@ -631,40 +631,47 @@ function computeResults() {
 
 function buildActionPlan(totalPct, sectionScores) {
   const actions = [];
-  const low = sectionScores.filter(s => s.pct < 60);
-  const med = sectionScores.filter(s => s.pct >= 60 && s.pct < 80);
 
+  // NED-specific actions (always first for NED role type)
   if (data.roleType && data.roleType.includes('NED')) {
     actions.push({ priority:'HIGH', label:'ICP: Board Target List', text:`${data.targetCompanies ? 'You have named: ' + data.targetCompanies + '. For each, research the current board composition and identify the skills or sector gaps your profile fills.' : 'Build a shortlist of 10 to 15 boards in ' + (data.targetSectors||'your target sector') + ' where your experience adds genuine value. Research the current composition and identify any skills or sector gaps your profile fills.'}` });
-    actions.push({ priority:'HIGH', label:'Headhunter Outreach: Board Specialists', text:'Contact Lygon Group, Spencer Stuart, and Egon Zehnder (the three firms most active in NED placements in your sector). Use a personalised hook for each, not a generic availability note.' });
   }
 
-  if (sectionScores.find(s=>s.name==='Headhunter Relationships' && s.pct<70)) {
-    actions.push({ priority:'MEDIUM', label:'Headhunter Relationships', text:`Identify five headhunters who specialise in ${data.targetSectors||'your sector'} at your seniority level. Research their recent placements, find a genuine hook for each, and send a personalised InMail this week. ${data.hhKnowledge && data.hhKnowledge !== 'Not yet' ? 'You have indicated some knowledge of active headhunters at your target companies. Use that as your starting point.' : 'Start by mapping which search firms have placed executives at: ' + (data.targetCompanies||'your target companies') + '.'}` });
-  }
-
+  // 1. LinkedIn Presence — do this BEFORE any outreach
   if (sectionScores.find(s=>s.name==='LinkedIn Presence' && s.pct<70)) {
     actions.push({ priority:'HIGH', label:'LinkedIn Profile Refresh', text:'Rewrite your headline to reflect your target role, not your current one. Update your summary to lead with your value proposition and the three things you are most known for. Do this before any outreach.' });
   }
 
-  if (sectionScores.find(s=>s.name==='Outreach Activity' && s.pct<70)) {
-    actions.push({ priority:'HIGH', label:'Weekly Outreach Target', text:'Set a target of five personalised outreach messages per week (minimum). Track every message in a simple spreadsheet: name, company, date sent, response received, follow-up due. Consistency is what converts.' });
-  }
-
+  // 2. Target Company Network — identify who can hire you
   if (sectionScores.find(s=>s.name==='Target Company Network' && s.pct<70)) {
     actions.push({ priority:'HIGH', label:'Identify the Hiring Decision-Maker', text:`${data.hiringExecs ? 'You have started mapping your hiring executives: ' + data.hiringExecs + '. For each, research their LinkedIn, find a genuine hook (a recent announcement, a shared connection, an event they spoke at), and map the shortest path to them.' : 'For each of your target companies (' + (data.targetCompanies||'list them first') + '), identify the executive who would hire someone at your level. This is typically the CEO, CFO, Chair, or relevant Board member, not HR. This is the most important step in your search.'}` });
   }
 
+  // 3. Outreach Activity — volume and consistency
+  if (sectionScores.find(s=>s.name==='Outreach Activity' && s.pct<70)) {
+    actions.push({ priority:'HIGH', label:'Weekly Outreach Target', text:'Set a target of five personalised outreach messages per week (minimum). Track every message in a simple spreadsheet: name, company, date sent, response received, follow-up due. Consistency is what converts.' });
+  }
+
+  // 4. Message Craft — quality of each message
   if (sectionScores.find(s=>s.name==='Message Craft' && s.pct<70)) {
     actions.push({ priority:'MEDIUM', label:'Message Framework', text:'Never send a message without a specific, genuine reason for reaching out. The hook (a session they spoke at, an article they published, a company milestone) must appear in the first line. A personalised hook outperforms a well-written generic message every time.' });
   }
 
+  // 5. Peer and Influencer Network — warm referrals
   if (sectionScores.find(s=>s.name==='Peer and Influencer Network' && s.pct<70)) {
     actions.push({ priority:'MEDIUM', label:'Activate Your Warm Network', text:'Make a list of the ten most influential people you know in your target sector. Reach out to each, not asking for a role, but reconnecting, sharing an insight, and letting them know you are exploring your next chapter. Referrals from warm contacts convert at three to five times the rate of cold outreach.' });
   }
 
+  // Filler action if fewer than 3 so far
   if (actions.length < 3) {
     actions.push({ priority:'MEDIUM', label:'Content Visibility', text:'Post one genuine insight or observation on LinkedIn per week. It does not need to be long. Three to five sentences on something you have seen or learnt in your sector. Visibility converts warm outreach into conversations.' });
+  }
+
+  // 6. Headhunter Relationships — ALWAYS LAST (least effective channel)
+  if (sectionScores.find(s=>s.name==='Headhunter Relationships' && s.pct<70)) {
+    actions.push({ priority:'MEDIUM', label:'Headhunter Relationships', text:`Identify five headhunters who specialise in ${data.targetSectors||'your sector'} at your seniority level. Research their recent placements, find a genuine hook for each, and send a personalised InMail this week. ${data.hhKnowledge && data.hhKnowledge !== 'Not yet' ? 'You have indicated some knowledge of active headhunters at your target companies. Use that as your starting point.' : 'Start by mapping which search firms have placed executives at: ' + (data.targetCompanies||'your target companies') + '.'}` });
+  } else if (data.roleType && data.roleType.includes('NED')) {
+    actions.push({ priority:'MEDIUM', label:'Headhunter Outreach: Board Specialists', text:'Contact Lygon Group, Spencer Stuart, and Egon Zehnder (the three firms most active in NED placements in your sector). Use a personalised hook for each, not a generic availability note.' });
   }
 
   return actions;
@@ -713,8 +720,8 @@ function renderResults() {
     return `<div class="stage-row">
       <div class="rag-dot" style="background:${rag.color}"></div>
       <div class="stage-name">${s.name}</div>
-      <div class="stage-pct">${s.pct}%</div>
-      <div class="stage-label" style="background:${rag.color}20;color:${rag.color}">${rag.label}</div>
+      <div class="stage-pct" style="text-align:right;min-width:38px">${s.pct}%</div>
+      <div class="stage-label" style="background:${rag.color}20;color:${rag.color};min-width:110px;text-align:center">${rag.label}</div>
     </div>`;
   }).join('');
 
@@ -869,9 +876,12 @@ function buildPayload() {
 
   const sectionRows = r.sectionScores.map(s => {
     const rag = ragStatus(s.pct);
+    const ragHex = rag.color === 'var(--rag-green)' ? '#2e9e4f' : rag.color === 'var(--rag-amber)' ? '#e0a527' : '#c0392b';
     return `<tr>
       <td style="padding:8px 12px;font-size:14px;color:#1a1833;border-bottom:1px solid #d9d6ee">${s.name}</td>
-      <td style="padding:8px 12px;font-size:14px;font-weight:700;color:${rag.color};border-bottom:1px solid #d9d6ee;white-space:nowrap;text-align:right">${s.pct}%  ${rag.label}</td>
+      <td style="padding:8px 12px;font-size:14px;font-weight:700;color:${ragHex};border-bottom:1px solid #d9d6ee;white-space:nowrap;text-align:right">
+        ${s.pct}%&nbsp;&nbsp;<span style="display:inline-block;background:${ragHex}22;color:${ragHex};font-size:11px;font-weight:700;border-radius:12px;padding:2px 10px;border:1px solid ${ragHex}44">${rag.label}</span>
+      </td>
     </tr>`;
   }).join('');
 
@@ -895,6 +905,7 @@ function buildPayload() {
     </tr></table>
   </td></tr>
   <tr><td style="background:#fff;padding:24px 20px">
+    <p style="font-size:15px;font-weight:600;color:#1a1833;margin:0 0 16px">Hi ${data.name},</p>
     <p style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#e9761b;text-transform:uppercase;text-align:center;margin:0 0 6px">Career Outreach Planner</p>
     <p style="font-size:36px;font-weight:700;color:#29245c;text-align:center;margin:0">${r.totalPct}%</p>
     <p style="text-align:center;margin:10px 0 20px"><span style="display:inline-block;background:#e9761b;color:#fff;font-size:12px;font-weight:700;border-radius:20px;padding:4px 16px">${r.band}</span></p>
